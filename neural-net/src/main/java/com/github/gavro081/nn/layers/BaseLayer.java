@@ -3,19 +3,28 @@ package com.github.gavro081.nn.layers;
 abstract public class BaseLayer implements ILayer {
     protected double[] input;
     protected double[] output;
+    protected int inputDimensions;
+    protected int outputDimensions;
 
     public BaseLayer(int inputDimensions, int outputDimensions) {
+        this.inputDimensions = inputDimensions;
+        this.outputDimensions = outputDimensions;
         this.input = new double[inputDimensions];
         this.output = new double[outputDimensions];
     }
 
     @Override
     public int getInputDimensions() {
-        return input.length;
+        return inputDimensions;
     }
 
     @Override
     public int getOutputDimensions() {
-        return output.length;
+        return outputDimensions;
+    }
+    
+    @Override
+    public void setInputDimensions(int inputDimensions) {
+        // fixed-dimension layers ignore this
     }
 }

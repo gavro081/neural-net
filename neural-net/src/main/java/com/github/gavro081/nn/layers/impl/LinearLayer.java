@@ -43,12 +43,11 @@ public class LinearLayer extends BaseLayer {
         *           w[20] * x[0] + w[21] * x[1] + x[22] * x[2] + bias, -> z[3]
         *           ]
         * */
-        double []output = new double[getOutputDimensions()];
         // todo: test other way around
         for (int i = 0; i < output.length; i++) {
-            output[i] = dotProduct(input, weights[i]) + bias;
+            this.output[i] = dotProduct(input, weights[i]) + bias;
         }
-        return output;
+        return this.output;
     }
 
     // todo: move this method

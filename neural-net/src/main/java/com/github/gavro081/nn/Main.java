@@ -1,6 +1,7 @@
 package com.github.gavro081.nn;
 
 import com.github.gavro081.nn.layers.impl.LinearLayer;
+import com.github.gavro081.nn.layers.impl.ReluLayer;
 import org.deeplearning4j.datasets.iterator.impl.MnistDataSetIterator;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -13,7 +14,8 @@ public class Main {
         DataSetIterator mnistTrain = new MnistDataSetIterator(100, true, 12345);
 
         NeuralNet nn = new NeuralNet();
-        nn.addLayer(new LinearLayer(28 * 28, 10));
+        nn.addLayer(new LinearLayer(28 * 28, 16));
+        nn.addLayer(new ReluLayer());
 //        nn.addLayer(new LinearLayer(3, 1));
         // double[][] trainX
         // int[] trainY

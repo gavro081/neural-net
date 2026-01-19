@@ -1,10 +1,10 @@
 package com.github.gavro081.nn;
 
-import com.github.gavro081.nn.exceptions.DimensionMismatchException;
-import com.github.gavro081.nn.layers.ILayer;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.github.gavro081.nn.exceptions.DimensionMismatchException;
+import com.github.gavro081.nn.layers.ILayer;
 
 public class NeuralNet {
     List<ILayer> layers;
@@ -43,34 +43,25 @@ public class NeuralNet {
         }
     }
 
-//    public void fit(List<DataSet> dataSet) throws Exception{
-////        validateDimensions(dataSet.getFirst().getFeatures().length(), dataSet.getFirst().numOutcomes());
-//        // double[][] trainX
-//        // int[] trainY
-//        for (DataSet ds : dataSet){
-//            INDArray features = ds.getFeatures();
-//            double[] input = features.reshape(features.length()).toDoubleVector(); // input neurons
-//
-//            double[] output = forward(input);
-//            for (double v : output) {
-//                System.out.println(v);
-//            }
-//
-//
-//        }
-//    }
-
-    private void validateDimensions(long inputDimension)
-            throws Exception {
+    private void validateDimensions(int inputDimension) throws Exception {
+        int currentDimension = inputDimension;
+        
         for (int i = 0; i < layers.size(); i++) {
             ILayer layer = layers.get(i);
-            if (inputDimension != layer.getInputDimensions()) {
-                throw new DimensionMismatchException(inputDimension, layer.getInputDimensions(), i);
+
+            // for layers with no predetermined dimensions (activations), set the dimension
+            if (layer.getInputDimensions() == -1) {
+                layer.setInputDimensions(currentDimension);
             }
-            inputDimension = layer.getOutputDimensions();
+
+            if (currentDimension != layer.getInputDimensions()) {
+                throw new DimensionMismatchException(currentDimension, layer.getInputDimensions(), i);
+            }
+            currentDimension = layer.getOutputDimensions();
         }
-//        if (inputDimension != numClasses) {
-//            throw new ClassDimensionsMismatchException(numClasses, inputDimension);
-//        }
+
+        // if (currentDimension != numClasses) {
+        //     throw new ClassDimensionsMismatchException(numClasses, currentDimension);
+        // }
     }
 }
