@@ -1,18 +1,18 @@
 package com.github.gavro081.nn.layers.impl;
 
-import com.github.gavro081.nn.layers.BaseLayer;
-
 import java.util.Arrays;
 import java.util.Random;
 
+import com.github.gavro081.nn.layers.BaseLayer;
+
 
 public class LinearLayer extends BaseLayer {
-    double[][] weights;
-    double[] bias;
+    public double[][] weights;
+    public double[] bias;
     
     // gradient accumulation (accumulated across batch)
-    private double[][] weightGradients;
-    private double[] biasGradients;
+    public double[][] weightGradients;
+    public double[] biasGradients;
     
     // cache from forward pass (used in backward pass)
     private double[] cachedInput;
@@ -36,7 +36,7 @@ public class LinearLayer extends BaseLayer {
         // column j in the matrix represents the vector of weights for the j-th neuron in the input
         double[][] weights = new double[outputDimensions][inputDimensions];
         
-        // xavier/He initialization: scale weights by sqrt(2/inputDimensions)
+        // xavier/he initialization: scale weights by sqrt(2/inputDimensions)
         double scale = Math.sqrt(2.0 / inputDimensions);
         
         for (int i = 0; i < outputDimensions; i++) {

@@ -1,9 +1,7 @@
 package com.github.gavro081.nn;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.github.gavro081.nn.utils.ExtractedData;
 import org.deeplearning4j.datasets.iterator.impl.MnistDataSetIterator;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -12,14 +10,14 @@ import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import com.github.gavro081.nn.layers.impl.LinearLayer;
 import com.github.gavro081.nn.layers.impl.ReluLayer;
 import com.github.gavro081.nn.loss.impl.MulticlassCrossEntropy;
-import com.github.gavro081.nn.optimizer.impl.SGDOptimizer;
-
+import com.github.gavro081.nn.optimizer.impl.AdamOptimizer;
+import com.github.gavro081.nn.utils.ExtractedData;
 import static com.github.gavro081.nn.utils.ExtractedData.extractData;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         final int BATCH_SIZE = 64;
-        final int EPOCHS = 5;
+        final int EPOCHS = 10;
         final int INPUT_DIMENSIONS = 28 * 28;
 
         DataSetIterator mnistTrain = new MnistDataSetIterator(BATCH_SIZE, true, 12345);
@@ -35,7 +33,7 @@ public class Main {
         nn.addLayer(new LinearLayer(32, 10));
 
         nn.setLossFunction(new MulticlassCrossEntropy());
-        nn.setOptimizer(new SGDOptimizer(0.01));
+        nn.setOptimizer(new AdamOptimizer(0.001));
 
         System.out.println("Starting training...");
         for (int epoch = 0; epoch < EPOCHS; epoch++) {
