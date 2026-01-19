@@ -21,7 +21,8 @@ public class Main {
         final int EPOCHS = 10;
         final int INPUT_DIMENSIONS = 28 * 28;
         final String MODEL_PATH = "mnist_model.nn.gz";
-        final boolean LOAD_EXISTING_MODEL = false;
+        final boolean LOAD_EXISTING_MODEL = false; // set to true if you want to load a saved model
+        final boolean SAVE_MODEL = false; // set to true if you want to save the model after training
 
         NeuralNet nn;
 
@@ -77,8 +78,7 @@ public class Main {
 
                 System.out.printf("Epoch Loss: %.4f%n", epochLoss / batchCount);
             }
-
-            nn.save(MODEL_PATH);
+            if (SAVE_MODEL) nn.save(MODEL_PATH);
         }
 
         System.out.println("\nEvaluating on test set...");

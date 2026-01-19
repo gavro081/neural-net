@@ -1,15 +1,21 @@
 package com.github.gavro081.nn.layers.impl;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Random;
 
-import com.github.gavro081.nn.layers.BaseLayer;
+import com.github.gavro081.nn.layers.ILayer;
 
 
-public class LinearLayer extends BaseLayer {
+public class LinearLayer implements ILayer, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
+
+    protected double[] input;
+    protected double[] output;
+    protected int inputDimensions;
+    protected int outputDimensions;
 
     public double[][] weights;
     public double[] bias;
@@ -22,10 +28,13 @@ public class LinearLayer extends BaseLayer {
     // transient because we want to skip it when serializing
     private transient double[] cachedInput;
     
-    public final Random random = new Random(12345); // todo: proper seed
+    public final Random random = new Random(42);
 
     public LinearLayer(int inputDimensions, int outputDimensions) {
-        super(inputDimensions, outputDimensions);
+        this.inputDimensions = inputDimensions;
+        this.outputDimensions = outputDimensions;
+        this.input = new double[inputDimensions];
+        this.output = new double[outputDimensions];
         weights = initWeights(inputDimensions, outputDimensions);
         bias = new double[outputDimensions];
         Arrays.fill(bias, 0.0);
@@ -113,5 +122,28 @@ public class LinearLayer extends BaseLayer {
             }
             bias[i] -= learningRate * biasGradients[i];
         }
+    }
+
+    @Override
+    public int getInputDimensions() {
+        return inputDimensions;
+    }
+
+    @Override
+    public int getOutputDimensions() {
+        return outputDimensions;
+    }
+
+    @Override
+    public void setInputDimensions(int inputDimensions) {
+        this.inputDimensions = inputDimensions;
+    }
+
+    protected double dotProduct(double[] input, double[] weight){
+        double sum = 0.0d;
+        for (int i = 0; i < input.length; i++) {
+            sum += input[i] * weight[i];
+        }
+        return sum;
     }
 }
