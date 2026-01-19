@@ -2,8 +2,13 @@ package com.github.gavro081.nn.loss.impl;
 
 import com.github.gavro081.nn.loss.ILoss;
 
-public class MulticlassCrossEntropy implements ILoss {
-    
+import java.io.Serial;
+import java.io.Serializable;
+
+public class MulticlassCrossEntropy implements ILoss, Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @Override
     public double calculateLoss(double[][] outputs, int[] targets, int numClasses) {
         int N = outputs.length;

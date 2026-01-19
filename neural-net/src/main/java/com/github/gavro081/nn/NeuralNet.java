@@ -1,7 +1,16 @@
 package com.github.gavro081.nn;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import com.github.gavro081.nn.exceptions.ClassDimensionsMismatchException;
 import com.github.gavro081.nn.exceptions.DimensionMismatchException;
@@ -9,7 +18,10 @@ import com.github.gavro081.nn.layers.ILayer;
 import com.github.gavro081.nn.loss.ILoss;
 import com.github.gavro081.nn.optimizer.IOptimizer;
 
-public class NeuralNet {
+public class NeuralNet implements Serializable{
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     List<ILayer> layers;
     ILoss lossFunction;
     IOptimizer optimizer;
@@ -161,5 +173,26 @@ public class NeuralNet {
             throw new ClassDimensionsMismatchException(numClasses, currentDimension);
         }
         validated = true;
+    }
+
+    public void save(String filepath) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(filepath);
+             GZIPOutputStream gzos = new GZIPOutputStream(fos);
+             ObjectOutputStream oos = new ObjectOutputStream(gzos)) {
+            
+            oos.writeObject(this);
+            System.out.printf("Model saved to: %s%n", filepath);
+        }
+    }
+
+    public static NeuralNet load(String filepath) throws IOException, ClassNotFoundException {
+        try (FileInputStream fis = new FileInputStream(filepath);
+             GZIPInputStream gzis = new GZIPInputStream(fis);
+             ObjectInputStream ois = new ObjectInputStream(gzis)) {
+            
+            NeuralNet nn = (NeuralNet) ois.readObject();
+            System.out.printf("Loaded model from: %s%n", filepath);
+            return nn;
+        }
     }
 }

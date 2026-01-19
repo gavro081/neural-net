@@ -1,5 +1,7 @@
 package com.github.gavro081.nn.optimizer.impl;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +10,10 @@ import com.github.gavro081.nn.layers.ILayer;
 import com.github.gavro081.nn.layers.impl.LinearLayer;
 import com.github.gavro081.nn.optimizer.IOptimizer;
 
-public class AdamOptimizer implements IOptimizer {
+public class AdamOptimizer implements IOptimizer, Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private final double learningRate;
     private final double beta1;
     private final double beta2;
@@ -110,7 +115,10 @@ public class AdamOptimizer implements IOptimizer {
         }
     }
     
-    private static class AdamState {
+    private static class AdamState implements Serializable {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         double[][] weightM;  // first moment (mean) for weights
         double[][] weightV;  // second moment (variance) for weights
         double[] biasM;      // first moment for biases

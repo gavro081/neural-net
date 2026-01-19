@@ -1,6 +1,12 @@
 package com.github.gavro081.nn.layers;
 
-abstract public class BaseLayer implements ILayer {
+import java.io.Serial;
+import java.io.Serializable;
+
+abstract public class BaseLayer implements ILayer, Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     protected double[] input;
     protected double[] output;
     protected int inputDimensions;

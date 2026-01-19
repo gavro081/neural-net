@@ -2,7 +2,13 @@ package com.github.gavro081.nn.layers.impl;
 
 import com.github.gavro081.nn.layers.ILayer;
 
-public class ReluLayer implements ILayer {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class ReluLayer implements ILayer, Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private int dimensions = -1; // -1 -> not yet determined
     private boolean[] cachedMask; // cache which elements were > 0
     

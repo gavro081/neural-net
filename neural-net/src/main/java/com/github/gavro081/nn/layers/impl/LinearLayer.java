@@ -1,5 +1,6 @@
 package com.github.gavro081.nn.layers.impl;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -7,6 +8,9 @@ import com.github.gavro081.nn.layers.BaseLayer;
 
 
 public class LinearLayer extends BaseLayer {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     public double[][] weights;
     public double[] bias;
     
@@ -15,7 +19,8 @@ public class LinearLayer extends BaseLayer {
     public double[] biasGradients;
     
     // cache from forward pass (used in backward pass)
-    private double[] cachedInput;
+    // transient because we want to skip it when serializing
+    private transient double[] cachedInput;
     
     public final Random random = new Random(12345); // todo: proper seed
 
