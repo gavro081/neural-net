@@ -12,17 +12,17 @@ public class LinearLayer implements ILayer, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    protected double[] input;
-    protected double[] output;
-    protected int inputDimensions;
-    protected int outputDimensions;
+    private final double[] input;
+    private final double[] output;
+    private int inputDimensions;
+    private int outputDimensions;
 
-    public double[][] weights;
-    public double[] bias;
+    private final double[][] weights;
+    private final double[] bias;
     
     // gradient accumulation (accumulated across batch)
-    public double[][] weightGradients;
-    public double[] biasGradients;
+    private final double[][] weightGradients;
+    private final double[] biasGradients;
     
     // cache from forward pass (used in backward pass)
     // transient because we want to skip it when serializing
@@ -134,12 +134,28 @@ public class LinearLayer implements ILayer, Serializable {
         return outputDimensions;
     }
 
+    public double[] getBias() {
+        return bias;
+    }
+
+    public double[][] getWeights() {
+        return weights;
+    }
+
+    public double[][] getWeightGradients() {
+        return weightGradients;
+    }
+
+    public double[] getBiasGradients() {
+        return biasGradients;
+    }
+
     @Override
     public void setInputDimensions(int inputDimensions) {
         this.inputDimensions = inputDimensions;
     }
 
-    protected double dotProduct(double[] input, double[] weight){
+    private double dotProduct(double[] input, double[] weight){
         double sum = 0.0d;
         for (int i = 0; i < input.length; i++) {
             sum += input[i] * weight[i];

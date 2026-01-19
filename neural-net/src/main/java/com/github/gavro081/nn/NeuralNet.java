@@ -22,12 +22,12 @@ public class NeuralNet implements Serializable{
     @Serial
     private static final long serialVersionUID = 1L;
 
-    List<ILayer> layers;
-    ILoss lossFunction;
-    IOptimizer optimizer;
-    double []input;
-    boolean validated = false;
-    double lastLoss = 0.0;  // store loss for monitoring
+    private List<ILayer> layers;
+    private ILoss lossFunction;
+    private IOptimizer optimizer;
+    private double []input;
+    private boolean validated = false;
+    private double lastLoss = 0.0;  // store loss for monitoring
 
     public NeuralNet() {
         layers = new ArrayList<>();
@@ -43,21 +43,19 @@ public class NeuralNet implements Serializable{
         this.optimizer = optimizer;
     }
 
-    public NeuralNet addLayer(ILayer layer){
+    public void addLayer(ILayer layer){
         layers.add(layer);
-        return this;
     }
 
-    public NeuralNet setOptimizer(IOptimizer optimizer){
+    public void setOptimizer(IOptimizer optimizer){
         this.optimizer = optimizer;
-        return this;
     }
 
     public void setLossFunction(ILoss lossFunction){
         this.lossFunction = lossFunction;
     }
 
-    private double[] forward(double []input){
+    public double[] forward(double []input){
         double []output = input;
         for (ILayer layer : layers) {
             output = layer.forward(output);
@@ -88,8 +86,7 @@ public class NeuralNet implements Serializable{
             outputs[i] = forward(input[i]).clone();
         }
 
-        double loss = lossFunction.calculateLoss(outputs, labels, numClasses);
-        this.lastLoss = loss;  // store loss for monitoring
+        this.lastLoss = lossFunction.calculateLoss(outputs, labels, numClasses);  // store loss for monitoring
 
         double[][] lossGradient = lossFunction.calculateGradient(outputs, labels, numClasses);
 
@@ -140,7 +137,6 @@ public class NeuralNet implements Serializable{
     public double getLastLoss() {
         return lastLoss;
     }
-
 
     private int inferNumClasses(int[] labels) {
         int maxLabel = -1;

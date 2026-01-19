@@ -53,15 +53,15 @@ public class AdamOptimizer implements IOptimizer, Serializable {
                 AdamState state = layerStates.get(linearLayer);
 
                 updateWeightsAdam(
-                    linearLayer.weights,
-                    linearLayer.weightGradients,
+                    linearLayer.getWeights(),
+                    linearLayer.getWeightGradients(),
                     state.weightM,
                     state.weightV
                 );
 
                 updateBiasAdam(
-                    linearLayer.bias,
-                    linearLayer.biasGradients,
+                    linearLayer.getBias(),
+                    linearLayer.getBiasGradients(),
                     state.biasM,
                     state.biasV
                 );
@@ -119,10 +119,10 @@ public class AdamOptimizer implements IOptimizer, Serializable {
         @Serial
         private static final long serialVersionUID = 1L;
 
-        double[][] weightM;  // first moment (mean) for weights
-        double[][] weightV;  // second moment (variance) for weights
-        double[] biasM;      // first moment for biases
-        double[] biasV;      // second moment for biases
+        private final double[][] weightM;  // first moment (mean) for weights
+        private final double[][] weightV;  // second moment (variance) for weights
+        private final double[] biasM;      // first moment for biases
+        private final double[] biasV;      // second moment for biases
         
         AdamState(int outputDim, int inputDim) {
             weightM = new double[outputDim][inputDim];
