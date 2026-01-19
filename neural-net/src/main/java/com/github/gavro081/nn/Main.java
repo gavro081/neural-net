@@ -14,6 +14,7 @@ import com.github.gavro081.nn.loss.impl.MulticlassCrossEntropy;
 import com.github.gavro081.nn.optimizer.impl.AdamOptimizer;
 import com.github.gavro081.nn.utils.ExtractedData;
 import static com.github.gavro081.nn.utils.ExtractedData.extractData;
+import com.github.gavro081.nn.utils.ImagePredictor;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -21,7 +22,7 @@ public class Main {
         final int EPOCHS = 10;
         final int INPUT_DIMENSIONS = 28 * 28;
         final String MODEL_PATH = "mnist_model.nn.gz";
-        final boolean LOAD_EXISTING_MODEL = false; // set to true if you want to load a saved model
+        final boolean LOAD_EXISTING_MODEL = true; // set to true if you want to load a saved model
         final boolean SAVE_MODEL = false; // set to true if you want to save the model after training
 
         NeuralNet nn;
@@ -86,5 +87,34 @@ public class Main {
         ExtractedData testData = extractData(mnistTest);
         double testAccuracy = nn.evaluate(testData.getFeatures(), testData.getLabels());
         System.out.printf("Test Accuracy: %.2f%%%n", testAccuracy);
+
+        // Predict on custom PNG images
+        if (new File(MODEL_PATH).exists()) {
+            System.out.println("\n=== Making predictions on custom images ===");
+            ImagePredictor predictor = new ImagePredictor(nn, 28, 28);
+            
+            // IMPORTANT: Set this to true if your images have BLACK digits on WHITE background
+            // MNIST is trained on WHITE digits on BLACK background
+            predictor.setInvertColors(true);
+            
+            String imagesDirectory = "src/main/resources/iloveimg-resized";
+            
+            // Debug first image to see pixel values
+            File dir = new File(imagesDirectory);
+            File[] imageFiles = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".png"));
+            if (imageFiles != null && imageFiles.length > 0) {
+                predictor.debugImagePixels(imageFiles[0].getAbsolutePath());
+            }
+            
+            ImagePredictor.PredictionResult[] results = predictor.predictFromDirectory(imagesDirectory);
+            
+            if (results.length == 0) {
+                System.out.println("No images found in directory: " + imagesDirectory);
+            } else {
+                for (ImagePredictor.PredictionResult result : results) {
+                    System.out.println(result);
+                }
+            }
+        }
     }
 }
