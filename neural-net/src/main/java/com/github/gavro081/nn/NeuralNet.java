@@ -7,19 +7,37 @@ import com.github.gavro081.nn.exceptions.ClassDimensionsMismatchException;
 import com.github.gavro081.nn.exceptions.DimensionMismatchException;
 import com.github.gavro081.nn.layers.ILayer;
 import com.github.gavro081.nn.loss.ILoss;
+import com.github.gavro081.nn.optimizer.IOptimizer;
 
 public class NeuralNet {
     List<ILayer> layers;
-    ILoss lossFunction = null;
+    ILoss lossFunction;
+    IOptimizer optimizer;
     double []input;
+    boolean validated = false;
+    double lastLoss = 0.0;  // store loss for monitoring
 
     public NeuralNet() {
         layers = new ArrayList<>();
         input = null;
     }
 
+    public NeuralNet(IOptimizer optimizer, ILoss lossFunction){
+        this.lossFunction = lossFunction;
+        this.optimizer = optimizer;
+    }
+    public NeuralNet(ILoss lossFunction, IOptimizer optimizer){
+        this.lossFunction = lossFunction;
+        this.optimizer = optimizer;
+    }
+
     public NeuralNet addLayer(ILayer layer){
         layers.add(layer);
+        return this;
+    }
+
+    public NeuralNet setOptimizer(IOptimizer optimizer){
+        this.optimizer = optimizer;
         return this;
     }
 
@@ -44,28 +62,71 @@ public class NeuralNet {
 
     public void fit(double[][] input, int[] labels) throws Exception {
         int numClasses = inferNumClasses(labels);
-        validateDimensions(input[0].length, numClasses);
+        if (!validated) validateDimensions(input[0].length, numClasses);
         if (this.lossFunction == null) throw new RuntimeException("Missing loss function. Make sure to set it using nn.setLossFunction(ILoss loss).");
 
         for (ILayer layer : layers) {
             layer.zeroGradients();
         }
 
+        // compute all forward passes to get outputs for gradient calculation
         double[][] outputs = new double[input.length][];
         for (int i = 0; i < input.length; i++) {
-            outputs[i] = forward(input[i]);
+            // clone the output since layers reuse internal buffers
+            outputs[i] = forward(input[i]).clone();
         }
 
         double loss = lossFunction.calculateLoss(outputs, labels, numClasses);
-        System.out.println("Loss: " + loss);
+        this.lastLoss = loss;  // store loss for monitoring
 
         double[][] lossGradient = lossFunction.calculateGradient(outputs, labels, numClasses);
 
+        // for each sample, we need to re-run forward to restore cached values
+        // before running backward. otherwise backward() uses cached values from the last
+        // forward pass, not the current sample.
         for (int i = 0; i < input.length; i++) {
+            forward(input[i]);  // re-cache the input for this sample
             backward(lossGradient[i]);
         }
 
-        // optimizer.step();
+        optimizer.step(layers);
+    }
+
+    public int[] predict(double[][] input) {
+        int[] predictions = new int[input.length];
+        
+        for (int i = 0; i < input.length; i++) {
+            double[] output = forward(input[i]);
+
+            int predictedClass = 0;
+            double maxValue = output[0];
+            for (int j = 1; j < output.length; j++) {
+                if (output[j] > maxValue) {
+                    maxValue = output[j];
+                    predictedClass = j;
+                }
+            }
+            predictions[i] = predictedClass;
+        }
+        
+        return predictions;
+    }
+
+    public double evaluate(double[][] testX, int[] testY) {
+        int[] predictions = predict(testX);
+        
+        int correct = 0;
+        for (int i = 0; i < testY.length; i++) {
+            if (predictions[i] == testY[i]) {
+                correct++;
+            }
+        }
+        
+        return (100.0 * correct) / testY.length;
+    }
+    
+    public double getLastLoss() {
+        return lastLoss;
     }
 
 
@@ -99,5 +160,6 @@ public class NeuralNet {
         if (currentDimension != numClasses) {
             throw new ClassDimensionsMismatchException(numClasses, currentDimension);
         }
+        validated = true;
     }
 }

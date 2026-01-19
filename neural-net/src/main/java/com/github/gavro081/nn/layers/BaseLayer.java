@@ -27,4 +27,12 @@ abstract public class BaseLayer implements ILayer {
     public void setInputDimensions(int inputDimensions) {
         // fixed-dimension layers ignore this
     }
+
+    protected double dotProduct(double[] input, double[] weight){
+        double sum = 0.0d;
+        for (int i = 0; i < input.length; i++) {
+            sum += input[i] * weight[i];
+        }
+        return sum;
+    }
 }

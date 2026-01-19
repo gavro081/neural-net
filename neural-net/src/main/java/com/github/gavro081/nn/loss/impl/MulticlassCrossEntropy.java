@@ -62,13 +62,21 @@ public class MulticlassCrossEntropy implements ILoss {
     }
 
     public double[][] calculateGradient(double[][] outputs, int[] targets, int numClasses){
-//        dL/d(logits) = softmax(logits) - one_hot(true_label)
-        double [][]gradient = new double[outputs.length][];
-        for (int i = 0; i < outputs.length; i++) {
+        // dL/d(logits) = softmax(logits) - one_hot(true_label)
+        // averaged over batch size
+        int batchSize = outputs.length;
+        double[][] gradient = new double[batchSize][];
+        
+        for (int i = 0; i < batchSize; i++) {
             gradient[i] = softmax(outputs[i]);
-
+            
             int trueLabelIndex = targets[i];
-            outputs[i][trueLabelIndex] -= 1d;
+            gradient[i][trueLabelIndex] -= 1.0;
+            
+            // average gradient by batch size
+            for (int j = 0; j < gradient[i].length; j++) {
+                gradient[i][j] /= batchSize;
+            }
         }
         return gradient;
     }

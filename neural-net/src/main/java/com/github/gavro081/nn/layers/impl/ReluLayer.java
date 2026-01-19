@@ -54,4 +54,8 @@ public class ReluLayer implements ILayer {
     public void setInputDimensions(int inputDimensions) {
         this.dimensions = inputDimensions;
     }
+
+    @Override
+    public void updateWeights(double learningRate) {
+    }
 }

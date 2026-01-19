@@ -22,8 +22,8 @@ public class LinearLayer extends BaseLayer {
     public LinearLayer(int inputDimensions, int outputDimensions) {
         super(inputDimensions, outputDimensions);
         weights = initWeights(inputDimensions, outputDimensions);
-        bias = new double[inputDimensions];
-        Arrays.fill(bias,0);
+        bias = new double[outputDimensions];
+        Arrays.fill(bias, 0.0);
         
         // Initialize gradient storage
         weightGradients = new double[outputDimensions][inputDimensions];
@@ -34,11 +34,15 @@ public class LinearLayer extends BaseLayer {
     private double[][] initWeights(int inputDimensions, int outputDimensions){
         // row i in the matrix represents the vector of weights for the i-th neuron in the output
         // column j in the matrix represents the vector of weights for the j-th neuron in the input
-        double [][]weights = new double[outputDimensions][inputDimensions];
+        double[][] weights = new double[outputDimensions][inputDimensions];
+        
+        // xavier/He initialization: scale weights by sqrt(2/inputDimensions)
+        double scale = Math.sqrt(2.0 / inputDimensions);
+        
         for (int i = 0; i < outputDimensions; i++) {
             for (int j = 0; j < inputDimensions; j++) {
-                // random.nextDouble() returns values in range [0,1]; i want that range to be [-1,1]
-                weights[i][j] = (random.nextDouble() - 0.5) * 2;
+                // gaussian random with proper scaling
+                weights[i][j] = (random.nextGaussian()) * scale;
             }
         }
         return weights;
@@ -47,7 +51,6 @@ public class LinearLayer extends BaseLayer {
     @Override
     public double[] forward(double[] input) {
         this.cachedInput = input;
-        
         /*
         * input:     [ 1, -1, 0.5] - x0, x1, x2
         * weights: [ [ 1, 2,  -2], - w00, w01, w02
@@ -89,19 +92,21 @@ public class LinearLayer extends BaseLayer {
     
     @Override
     public void zeroGradients() {
-        // Reset weight and bias gradients
+        // reset weight and bias gradients
         for (double[] weightGradient : weightGradients) {
             Arrays.fill(weightGradient, 0.0);
         }
         Arrays.fill(biasGradients, 0.0);
     }
 
-    // todo: move this method
-    private double dotProduct(double[] input, double[] weight){
-        double sum = 0.0d;
-        for (int i = 0; i < input.length; i++) {
-            sum += input[i] * weight[i];
+
+    @Override
+    public void updateWeights(double learningRate) {
+        for (int i = 0; i < outputDimensions; i++) {
+            for (int j = 0; j < inputDimensions; j++) {
+                weights[i][j] -= learningRate * weightGradients[i][j];
+            }
+            bias[i] -= learningRate * biasGradients[i];
         }
-        return sum;
     }
 }
