@@ -51,7 +51,7 @@ The forward pass transforms input data into a prediction by passing it through a
 
 #### Linear Layer (Dense Layer)
 
-The linear layer is the core building block. It computes a weighted sum of inputs and them adds a bias:
+The linear layer is the core building block. It computes a weighted sum of inputs and then adds a bias:
 
 $$z_i = \sum_{j} w_{ij} \cdot x_j + b_i$$
 
@@ -183,7 +183,7 @@ $$w = w - \alpha \cdot \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$$
 
 Adam generally gives better results because it combines the benefits of momentum (faster convergence, escapes local minima) with adaptive learning rates (automatically scales updates for each weight).
 
-On the tests i ran on the MNIST dataset, changing the optimizer from SGD to Adam gave ~3% increase, (from ~94% to ~97%)
+On the tests i ran on the MNIST dataset, changing the optimizer from SGD to Adam gave ~3% increase (from ~94% to ~97%) on the same model.
 
 ---
 
@@ -384,7 +384,6 @@ You may also add your own images of numbers and have the model predict them by f
 This implementation was NOT built with performance in mind, it was built for educational purposes and getting a deeper understanding of the underlying structure of a neural network.
 
 No real optimizations are used:
-
 - CPU only
 - nested loops for matrix operations,
 - sequential sample by sample processing instead of true batching
